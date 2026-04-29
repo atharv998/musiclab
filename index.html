@@ -14,6 +14,10 @@
             --glass-bg: rgba(20, 20, 20, 0.45);
             --btn-bg: rgba(255, 255, 255, 0.05);
             --btn-hover: rgba(255, 255, 255, 0.15);
+            
+            /* Scroll Intensity Variables */
+            --intensity: 1; 
+            --anim-speed: 1; 
         }
 
         /* --- Animated Theme Colors (8 Moods) --- */
@@ -83,6 +87,19 @@
         .intro-logo { font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: clamp(8px, 2vw, 15px); font-weight: 300; color: #fff; animation: introFade 2s ease-in-out infinite alternate; }
         @keyframes introFade { 0% { opacity: 0.2; text-shadow: 0 0 10px transparent, 0 0 20px transparent; transform: scale(0.98); } 100% { opacity: 1; text-shadow: 0 0 20px #fff, 0 0 40px var(--accent-color); transform: scale(1); } }
 
+        /* --- Scroll Intensity UI Meter --- */
+        #intensity-meter {
+            position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; padding: 1rem 0.6rem; display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transition: opacity 0.4s ease; z-index: 100; pointer-events: none;
+        }
+        #intensity-meter.visible { opacity: 1; }
+        .meter-bar { width: 6px; height: 120px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; margin-bottom: 8px; position: relative; overflow: hidden; }
+        .meter-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: var(--accent-color); transition: height 0.1s ease, background 1.2s; box-shadow: 0 0 10px var(--accent-color); }
+        .meter-text { font-size: 0.7rem; font-weight: bold; color: var(--text-color); letter-spacing: 1px; text-transform: uppercase; }
+
         /* --- Particle Canvas --- */
         #bg-canvas { 
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; overflow: hidden;
@@ -101,7 +118,10 @@
         @keyframes cardEntrance { to { opacity: 1; transform: translateY(0); } }
 
         /* --- Echo Visualizer with Soundwaves --- */
-        .orb-container { position: relative; width: clamp(60px, 10vw, 80px); height: clamp(60px, 10vw, 80px); margin: 0 auto 1.5rem; }
+        .orb-container { 
+            position: relative; width: clamp(60px, 10vw, 80px); height: clamp(60px, 10vw, 80px); margin: 0 auto 1.5rem; 
+            transform: scale(var(--intensity)); transition: transform 0.2s ease-out; /* Responds to scroll */
+        }
         .echo-orb {
             position: relative; width: 100%; height: 100%; border-radius: 50%; background: var(--accent-color);
             box-shadow: 0 0 30px var(--accent-color), inset 0 0 15px rgba(255,255,255,0.8);
@@ -111,8 +131,8 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%;
             border-radius: 50%; border: 2px solid var(--accent-color); opacity: 0; z-index: 1; transition: border-color 1.2s;
         }
-        body:not(:not([class])) .wave-1 { animation: ripple 2.5s infinite ease-out; }
-        body:not(:not([class])) .wave-2 { animation: ripple 2.5s infinite ease-out 1.25s; }
+        body:not(:not([class])) .wave-1 { animation: ripple calc(2.5s * var(--anim-speed)) infinite ease-out; }
+        body:not(:not([class])) .wave-2 { animation: ripple calc(2.5s * var(--anim-speed)) infinite ease-out calc(1.25s * var(--anim-speed)); }
 
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 60px var(--accent-color); } 100% { transform: scale(0.95); opacity: 0.8; } }
         @keyframes ripple { 0% { width: 100%; height: 100%; opacity: 0.8; } 100% { width: 350%; height: 350%; opacity: 0; } }
@@ -147,9 +167,6 @@
         .controls.visible { opacity: 1; pointer-events: all; }
         .btn-small { border: none; background: transparent; text-decoration: none; opacity: 0.6; padding: 0.6rem 1.2rem; font-size: 0.95rem; border-radius: 20px; transition: all 0.3s; border: 1px solid transparent; margin: 0 auto; cursor: pointer;}
         .btn-small:hover { opacity: 1; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); transform: translateY(-2px); }
-        
-        .credit { position: fixed; bottom: 15px; font-size: 0.8rem; opacity: 0.3; z-index: 10; letter-spacing: 1px; font-weight: 300; transition: opacity 0.3s; text-align: center; width: 100%;}
-        .credit:hover { opacity: 0.8; }
 
         /* --- Dynamic Particle Animations --- */
         .drop { position: absolute; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.5)); width: 2px; animation: fall linear infinite; }
@@ -167,9 +184,9 @@
         .star { position: absolute; background: white; border-radius: 50%; animation: twinkle ease-in-out infinite alternate; }
         @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 15px white; } }
 
-        .ocean-wave { position: absolute; bottom: -150vw; left: -50vw; width: 200vw; height: 200vw; background: rgba(255, 255, 255, 0.05); border-radius: 43%; animation: spinWave 12s infinite linear; transform-origin: 50% 48%; }
-        .ocean-wave:nth-child(2) { animation: spinWave 16s infinite linear; background: rgba(0, 210, 255, 0.1); border-radius: 45%; }
-        .ocean-wave:nth-child(3) { animation: spinWave 20s infinite linear; background: rgba(0, 77, 122, 0.2); border-radius: 40%; }
+        .ocean-wave { position: absolute; bottom: -150vw; left: -50vw; width: 200vw; height: 200vw; background: rgba(255, 255, 255, 0.05); border-radius: 43%; transform-origin: 50% 48%; }
+        .ocean-wave:nth-child(2) { background: rgba(0, 210, 255, 0.1); border-radius: 45%; }
+        .ocean-wave:nth-child(3) { background: rgba(0, 77, 122, 0.2); border-radius: 40%; }
         @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- Mobile Media Queries --- */
@@ -178,7 +195,7 @@
             .mood-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
             .dialogue-box { min-height: 70px; }
             button { padding: 0.8rem 0.5rem; }
-            .credit { bottom: 10px; font-size: 0.7rem; }
+            #intensity-meter { right: 10px; padding: 0.8rem 0.4rem; }
         }
     </style>
 </head>
@@ -186,6 +203,13 @@
 
     <div id="intro-screen">
         <div class="intro-logo">E C H O</div>
+    </div>
+
+    <div id="intensity-meter">
+        <div class="meter-bar">
+            <div class="meter-fill" id="meter-fill"></div>
+        </div>
+        <div class="meter-text">Vibe</div>
     </div>
 
     <div id="bg-canvas"></div>
@@ -222,8 +246,6 @@
         </div>
     </div>
 
-    <div class="credit">Built by Atharv Jeetendra Gaware</div>
-
     <script>
         const introScreen = document.getElementById('intro-screen');
         const dialogueEl = document.getElementById('dialogue');
@@ -234,57 +256,41 @@
         const bgCanvas = document.getElementById('bg-canvas');
         let typingTimeout;
 
-        // --- 100% REAL VALID SPOTIFY EMBEDS (Guaranteed no 404s) ---
-        // These are authentic open.spotify.com/embed links containing massive playlists.
-       // --- 100% REAL VALID SPOTIFY EMBEDS (Guaranteed no 404s) ---
+        // --- 100% REAL VALID SPOTIFY EMBEDS ---
         const moods = {
             drift: {
                 theme: 'theme-drift', message: "Drifting away. Let the rain wash over you.", particle: 'rain',
-                // Official Spotify Lofi Beats
-                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0" 
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0" // Lofi Beats
             },
             surge: {
                 theme: 'theme-surge', message: "Energy engaged. Let's start the fire.", particle: 'embers',
-                // Official Spotify Beast Mode Workout
-                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" 
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" // Beast Mode Workout
             },
-           nostalgia: {
-                theme: 'theme-nostalgia', 
-                message: "Sunset vibes. Let the memories roll in.", 
-                particle: 'orbs', 
-                color: '#fbbf24',
-                // Official Spotify Bollywood Mush Embed Link
-                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUfTFmNBRM?utm_source=generator&theme=0" 
+            nostalgia: {
+                theme: 'theme-nostalgia', message: "Sunset vibes. Let the memories roll in.", particle: 'orbs', color: '#fbbf24',
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUfTFmNBRM?utm_source=generator&theme=0" // Bollywood Mush
             },
             focus: {
                 theme: 'theme-focus', message: "Dialing it in. Zero distractions.", particle: 'geo',
-                // Official Spotify Deep Focus
-                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ?utm_source=generator&theme=0" 
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ?utm_source=generator&theme=0" // Deep Focus
             },
             cosmic: {
                 theme: 'theme-cosmic', message: "Leaving orbit. Welcome to the galaxy.", particle: 'stars',
-                // Official Spotify Retrowave / Outrun
-                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DXdLEN7aqioJC?utm_source=generator&theme=0" 
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DXdLEN7aqioJC?utm_source=generator&theme=0" // Retrowave / Outrun
             },
             cafe: {
                 theme: 'theme-cafe', message: "Warm mugs and acoustic guitars. Grab a seat.", particle: 'orbs', color: '#fdba74',
-                // Official Spotify Acoustic Covers
-                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DWYV7OOaGhoH0?utm_source=generator&theme=0" 
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DWUNIrSzKgQPb?utm_source=generator&theme=0" // Acoustic Covers
             },
             ocean: {
                 theme: 'theme-ocean', message: "Diving deep. Let the waves carry you.", particle: 'waves',
-                // Official Spotify Chill Hits
-                spotifySrc: "https://open.spotify.com/playlist/3AhibKdBAssmQDfiXLnorz?si=m4qKDTXbTRi-1jMM-0QA-g" 
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DX4WYpdVIPcmO?utm_source=generator&theme=0" // Chill Hits
             },
             nature: {
                 theme: 'theme-nature', message: "Breathing in. Finding peace in the forest.", particle: 'orbs', color: '#34d399',
-                // Official Spotify Nature Sounds
-                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DX4PP3DA4J0N8?utm_source=generator&theme=0" 
+                spotifySrc: "https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO1alA2W?utm_source=generator&theme=0" // Nature Sounds
             }
         };
-        
-        
-        
 
         // --- Interactive 3D Mouse Parallax Effect ---
         document.addEventListener("mousemove", (e) => {
@@ -293,7 +299,7 @@
             bgCanvas.style.transform = `translateX(${x}px) translateY(${y}px)`;
         });
 
-        // --- Dynamic Particle Engine ---
+        // --- Dynamic Particle Engine (Connected to Intensity Meter) ---
         function generateParticles(type, colorCode) {
             bgCanvas.innerHTML = ''; 
             
@@ -301,12 +307,14 @@
                 for (let i = 0; i < 3; i++) {
                     const wave = document.createElement('div');
                     wave.className = 'ocean-wave';
+                    // Base times: 12s, 16s, 20s mapped to CSS var(--anim-speed)
+                    const baseTime = 12 + (i * 4);
+                    wave.style.animation = `spinWave calc(${baseTime}s * var(--anim-speed)) infinite linear`;
                     bgCanvas.appendChild(wave);
                 }
                 return;
             }
 
-            // Adjust particle count dynamically based on screen size to preserve mobile performance
             const isMobile = window.innerWidth < 650;
             let count = 0;
             if (type === 'rain') count = isMobile ? 60 : 120;
@@ -323,28 +331,82 @@
 
                 if (type === 'rain') {
                     el.className = 'drop'; el.style.left = `${left}vw`; el.style.top = `${Math.random() * -100}px`;
-                    el.style.height = `${Math.random() * 40 + 20}px`; el.style.animationDuration = `${Math.random() * 1 + 0.5}s`; el.style.animationDelay = `${delay}s`;
+                    el.style.height = `${Math.random() * 40 + 20}px`; 
+                    el.style.animationDuration = `calc(${Math.random() * 1 + 0.5}s * var(--anim-speed))`; el.style.animationDelay = `${delay}s`;
                 } else if (type === 'embers') {
                     el.className = 'ember'; el.style.left = `${left}vw`; el.style.bottom = `-20px`;
-                    el.style.width = el.style.height = `${Math.random() * 6 + 2}px`; el.style.animationDuration = `${duration}s`; el.style.animationDelay = `${delay}s`;
+                    el.style.width = el.style.height = `${Math.random() * 6 + 2}px`; 
+                    el.style.animationDuration = `calc(${duration}s * var(--anim-speed))`; el.style.animationDelay = `${delay}s`;
                 } else if (type === 'orbs') {
                     el.className = 'orb'; el.style.left = `${left}vw`; el.style.top = `${Math.random() * 100}vh`;
                     el.style.width = el.style.height = `${Math.random() * 150 + 50}px`; el.style.background = colorCode;
-                    el.style.opacity = Math.random() * 0.3 + 0.1; el.style.animationDuration = `${duration * 2}s`; el.style.animationDelay = `${delay}s`;
+                    el.style.opacity = Math.random() * 0.3 + 0.1; 
+                    el.style.animationDuration = `calc(${duration * 2}s * var(--anim-speed))`; el.style.animationDelay = `${delay}s`;
                 } else if (type === 'geo') {
                     el.className = 'geo-shape'; el.style.left = `${left}vw`;
                     const size = Math.random() * 30 + 10; el.style.width = el.style.height = `${size}px`;
                     el.style.borderRadius = Math.random() > 0.5 ? '50%' : '4px'; 
-                    el.style.animationDuration = `${duration * 3}s`; el.style.animationDelay = `${delay}s`;
+                    el.style.animationDuration = `calc(${duration * 3}s * var(--anim-speed))`; el.style.animationDelay = `${delay}s`;
                 } else if (type === 'stars') {
                     el.className = 'star'; el.style.left = `${left}vw`; el.style.top = `${Math.random() * 100}vh`;
-                    el.style.width = el.style.height = `${Math.random() * 3 + 1}px`; el.style.animationDuration = `${Math.random() * 2 + 1}s`; el.style.animationDelay = `${delay}s`;
+                    el.style.width = el.style.height = `${Math.random() * 3 + 1}px`; 
+                    el.style.animationDuration = `calc(${Math.random() * 2 + 1}s * var(--anim-speed))`; el.style.animationDelay = `${delay}s`;
                 }
                 bgCanvas.appendChild(el);
             }
         }
 
-        // --- Core Functions ---
+        // --- Scroll/Touch Controlled Intensity Engine ---
+        let visualIntensity = 1.0; 
+        let meterTimeout;
+        const meterContainer = document.getElementById('intensity-meter');
+        const meterFill = document.getElementById('meter-fill');
+
+        function updateIntensity(change) {
+            if (!playerContainer.classList.contains('visible')) return;
+
+            visualIntensity += change;
+            visualIntensity = Math.max(0.5, Math.min(1.5, visualIntensity));
+
+            // Set CSS Variable for Orb Size
+            document.documentElement.style.setProperty('--intensity', visualIntensity);
+            
+            // Set CSS Variable for Animation Speed (Inverse relation: higher intensity = lower duration = faster)
+            const speedMultiplier = 2.0 - visualIntensity; 
+            document.documentElement.style.setProperty('--anim-speed', `${speedMultiplier}`);
+
+            // Update UI Meter
+            const percentage = ((visualIntensity - 0.5) / 1.0) * 100;
+            meterFill.style.height = `${percentage}%`;
+
+            // Show Meter
+            meterContainer.classList.add('visible');
+
+            // Hide Meter after 1.5s
+            clearTimeout(meterTimeout);
+            meterTimeout = setTimeout(() => {
+                meterContainer.classList.remove('visible');
+            }, 1500);
+        }
+
+        window.addEventListener('wheel', (e) => {
+            if (e.deltaY < 0) updateIntensity(0.05); // Scroll Up
+            else updateIntensity(-0.05); // Scroll Down
+        });
+
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, {passive: true});
+        window.addEventListener('touchmove', (e) => {
+            const touchEndY = e.touches[0].clientY;
+            const diff = touchStartY - touchEndY;
+            if (Math.abs(diff) > 15) {
+                if (diff > 0) updateIntensity(0.04); // Swipe Up
+                else updateIntensity(-0.04); // Swipe Down
+                touchStartY = touchEndY; 
+            }
+        }, {passive: true});
+
+        // --- Core Application Functions ---
         function typeWriter(text, index = 0) {
             if (index === 0) { dialogueEl.innerHTML = ''; clearTimeout(typingTimeout); }
             if (index < text.length) {
@@ -358,6 +420,11 @@
         function setMood(moodKey) {
             const mood = moods[moodKey];
             
+            // Reset Intensity
+            visualIntensity = 1.0;
+            document.documentElement.style.setProperty('--intensity', '1.0');
+            document.documentElement.style.setProperty('--anim-speed', '1.0');
+
             document.body.className = mood.theme;
             generateParticles(mood.particle, mood.color);
             spotifyPlayer.src = mood.spotifySrc;
@@ -379,11 +446,11 @@
             spotifyPlayer.src = ""; 
             playerContainer.classList.remove('visible');
             controls.classList.remove('visible');
+            meterContainer.classList.remove('visible');
             
             typeWriter("Frequency cleared. What kind of space are you trying to create right now?");
         }
 
-        // --- Initialization Sequence ---
         function initJourney() {
             const previousMood = localStorage.getItem('savedMood');
             
